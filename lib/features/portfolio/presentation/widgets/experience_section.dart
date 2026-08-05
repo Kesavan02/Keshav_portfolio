@@ -10,9 +10,14 @@ class ExperienceSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 850;
+
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 100),
+      padding: EdgeInsets.symmetric(
+        horizontal: isMobile ? 20 : 50,
+        vertical: isMobile ? 40 : 60,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -24,7 +29,7 @@ class ExperienceSection extends StatelessWidget {
               color: AppColors.textPrimary,
             ),
           ),
-          const SizedBox(height: 60),
+          SizedBox(height: isMobile ? 30 : 45),
           Wrap(
             spacing: 30,
             runSpacing: 30,

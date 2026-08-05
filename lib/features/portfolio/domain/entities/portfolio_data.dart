@@ -21,15 +21,49 @@ class Project extends Equatable {
   final String title;
   final String description;
   final List<String> technologies;
+  final String? tagline;
+  final String? imageUrl;
+  final String? githubUrl;
+  final String? playStoreUrl;
+  final String? category;
+  final String? overview;
+  final List<String>? webFeatures;
+  final List<String>? mobileFeatures;
+  final List<String>? architectureDetails;
+  final Map<String, List<String>>? techStackMap;
 
   const Project({
     required this.title,
     required this.description,
     required this.technologies,
+    this.tagline,
+    this.imageUrl,
+    this.githubUrl,
+    this.playStoreUrl,
+    this.category,
+    this.overview,
+    this.webFeatures,
+    this.mobileFeatures,
+    this.architectureDetails,
+    this.techStackMap,
   });
 
   @override
-  List<Object?> get props => [title, description, technologies];
+  List<Object?> get props => [
+        title,
+        description,
+        technologies,
+        tagline,
+        imageUrl,
+        githubUrl,
+        playStoreUrl,
+        category,
+        overview,
+        webFeatures,
+        mobileFeatures,
+        architectureDetails,
+        techStackMap,
+      ];
 }
 
 class Experience extends Equatable {

@@ -1,10 +1,11 @@
-import 'dart:html' as html;
+import 'dart:js_interop';
 import 'dart:ui_web' as ui_web;
 import 'package:flutter/material.dart';
+import 'package:web/web.dart' as web;
 
 class HeroVideoController {
   final VoidCallback onReady;
-  late final html.VideoElement videoElement;
+  late final web.HTMLVideoElement videoElement;
   final String viewType;
   bool _isReady = false;
   bool _isSeeking = false;
@@ -12,7 +13,7 @@ class HeroVideoController {
 
   HeroVideoController({required this.onReady})
     : viewType = 'hero-video-view-${DateTime.now().microsecondsSinceEpoch}' {
-    videoElement = html.VideoElement()
+    videoElement = web.document.createElement('video') as web.HTMLVideoElement
       ..src = 'assets/assets/video/avatar_video.mp4'
       ..autoplay = false
       ..controls = false
@@ -33,7 +34,7 @@ class HeroVideoController {
 
     // Warm up the video decoder by playing and pausing it.
     // Muted videos are allowed to autoplay without user interaction.
-    videoElement.play().then((_) {
+    videoElement.play().toDart.then((_) {
       videoElement.pause();
     }).catchError((_) {
       // Ignore autoplay policy blocks
@@ -46,25 +47,44 @@ class HeroVideoController {
       }
     }
 
-    videoElement.onLoadedMetadata.listen((_) => setReady());
-    videoElement.onCanPlay.listen((_) => setReady());
+    videoElement.addEventListener(
+      'loadedmetadata',
+      (web.Event event) {
+        setReady();
+      }.toJS,
+    );
 
-    videoElement.onError.listen((_) {
-      if (videoElement.src.contains('assets/assets/')) {
-        // Fallback to without double assets prefix if the first one fails
-        videoElement.src = 'assets/video/avatar_video.mp4';
-        videoElement.load();
-        videoElement.play().then((_) => videoElement.pause()).catchError((_) {});
-      }
-    });
+    videoElement.addEventListener(
+      'canplay',
+      (web.Event event) {
+        setReady();
+      }.toJS,
+    );
 
-    videoElement.onSeeked.listen((_) {
-      _isSeeking = false;
-      // Align the next seek with the browser's animation/paint loop
-      html.window.requestAnimationFrame((_) {
-        _performSeek();
-      });
-    });
+    videoElement.addEventListener(
+      'error',
+      (web.Event event) {
+        if (videoElement.src.contains('assets/assets/')) {
+          // Fallback to without double assets prefix if the first one fails
+          videoElement.src = 'assets/video/avatar_video.mp4';
+          videoElement.load();
+          videoElement.play().toDart.then((_) => videoElement.pause()).catchError((_) {});
+        }
+      }.toJS,
+    );
+
+    videoElement.addEventListener(
+      'seeked',
+      (web.Event event) {
+        _isSeeking = false;
+        // Align the next seek with the browser's animation/paint loop
+        web.window.requestAnimationFrame(
+          (double timestamp) {
+            _performSeek();
+          }.toJS,
+        );
+      }.toJS,
+    );
 
     // In case the metadata is already loaded:
     if (!videoElement.duration.isNaN && videoElement.duration > 0) {

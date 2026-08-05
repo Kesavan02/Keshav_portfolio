@@ -12,25 +12,113 @@ class ProjectModel extends Project {
   @override
   final List<String> technologies;
 
+  @override
+  final String? tagline;
+
+  @override
+  final String? imageUrl;
+
+  @override
+  final String? githubUrl;
+
+  @override
+  final String? playStoreUrl;
+
+  @override
+  final String? category;
+
+  @override
+  final String? overview;
+
+  @override
+  final List<String>? webFeatures;
+
+  @override
+  final List<String>? mobileFeatures;
+
+  @override
+  final List<String>? architectureDetails;
+
+  @override
+  final Map<String, List<String>>? techStackMap;
+
   const ProjectModel({
     required this.title,
     required this.description,
     required this.technologies,
-  }) : super(title: title, description: description, technologies: technologies);
+    this.tagline,
+    this.imageUrl,
+    this.githubUrl,
+    this.playStoreUrl,
+    this.category,
+    this.overview,
+    this.webFeatures,
+    this.mobileFeatures,
+    this.architectureDetails,
+    this.techStackMap,
+  }) : super(
+         title: title,
+         description: description,
+         technologies: technologies,
+         tagline: tagline,
+         imageUrl: imageUrl,
+         githubUrl: githubUrl,
+         playStoreUrl: playStoreUrl,
+         category: category,
+         overview: overview,
+         webFeatures: webFeatures,
+         mobileFeatures: mobileFeatures,
+         architectureDetails: architectureDetails,
+         techStackMap: techStackMap,
+       );
 
   factory ProjectModel.fromEntity(Project entity) {
     return ProjectModel(
       title: entity.title,
       description: entity.description,
       technologies: entity.technologies,
+      tagline: entity.tagline,
+      imageUrl: entity.imageUrl,
+      githubUrl: entity.githubUrl,
+      playStoreUrl: entity.playStoreUrl,
+      category: entity.category,
+      overview: entity.overview,
+      webFeatures: entity.webFeatures,
+      mobileFeatures: entity.mobileFeatures,
+      architectureDetails: entity.architectureDetails,
+      techStackMap: entity.techStackMap,
     );
   }
 
   factory ProjectModel.fromJson(Map<String, dynamic> json) {
+    Map<String, List<String>>? parsedTechStack;
+    if (json['techStackMap'] != null) {
+      final rawMap = json['techStackMap'] as Map<String, dynamic>;
+      parsedTechStack = rawMap.map(
+        (key, value) => MapEntry(key, List<String>.from(value as List)),
+      );
+    }
+
     return ProjectModel(
       title: json['title'] as String,
       description: json['description'] as String,
       technologies: List<String>.from(json['technologies']),
+      tagline: json['tagline'] as String?,
+      imageUrl: json['imageUrl'] as String?,
+      githubUrl: json['githubUrl'] as String?,
+      playStoreUrl: json['playStoreUrl'] as String?,
+      category: json['category'] as String?,
+      overview: json['overview'] as String?,
+      webFeatures: json['webFeatures'] != null
+          ? List<String>.from(json['webFeatures'])
+          : null,
+      mobileFeatures: json['mobileFeatures'] != null
+          ? List<String>.from(json['mobileFeatures'])
+          : null,
+      architectureDetails: json['architectureDetails'] != null
+          ? List<String>.from(json['architectureDetails'])
+          : null,
+      techStackMap: parsedTechStack,
     );
   }
 
@@ -39,6 +127,16 @@ class ProjectModel extends Project {
       'title': title,
       'description': description,
       'technologies': technologies,
+      'tagline': tagline,
+      'imageUrl': imageUrl,
+      'githubUrl': githubUrl,
+      'playStoreUrl': playStoreUrl,
+      'category': category,
+      'overview': overview,
+      'webFeatures': webFeatures,
+      'mobileFeatures': mobileFeatures,
+      'architectureDetails': architectureDetails,
+      'techStackMap': techStackMap,
     };
   }
 }
@@ -61,7 +159,12 @@ class ExperienceModel extends Experience {
     required this.company,
     required this.duration,
     required this.responsibilities,
-  }) : super(role: role, company: company, duration: duration, responsibilities: responsibilities);
+  }) : super(
+         role: role,
+         company: company,
+         duration: duration,
+         responsibilities: responsibilities,
+       );
 
   factory ExperienceModel.fromEntity(Experience entity) {
     return ExperienceModel(
@@ -98,16 +201,11 @@ class CertificationModel extends Certification {
   @override
   final String issuer;
 
-  const CertificationModel({
-    required this.name,
-    required this.issuer,
-  }) : super(name: name, issuer: issuer);
+  const CertificationModel({required this.name, required this.issuer})
+    : super(name: name, issuer: issuer);
 
   factory CertificationModel.fromEntity(Certification entity) {
-    return CertificationModel(
-      name: entity.name,
-      issuer: entity.issuer,
-    );
+    return CertificationModel(name: entity.name, issuer: entity.issuer);
   }
 
   factory CertificationModel.fromJson(Map<String, dynamic> json) {
@@ -118,10 +216,7 @@ class CertificationModel extends Certification {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'name': name,
-      'issuer': issuer,
-    };
+    return {'name': name, 'issuer': issuer};
   }
 }
 
@@ -132,16 +227,11 @@ class SkillModel extends Skill {
   @override
   final List<String> items;
 
-  const SkillModel({
-    required this.category,
-    required this.items,
-  }) : super(category: category, items: items);
+  const SkillModel({required this.category, required this.items})
+    : super(category: category, items: items);
 
   factory SkillModel.fromEntity(Skill entity) {
-    return SkillModel(
-      category: entity.category,
-      items: entity.items,
-    );
+    return SkillModel(category: entity.category, items: entity.items);
   }
 
   factory SkillModel.fromJson(Map<String, dynamic> json) {
@@ -152,10 +242,7 @@ class SkillModel extends Skill {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'category': category,
-      'items': items,
-    };
+    return {'category': category, 'items': items};
   }
 }
 
@@ -177,14 +264,27 @@ class PortfolioDataModel extends PortfolioData {
     required this.experiences,
     required this.certifications,
     required this.skills,
-  }) : super(projects: projects, experiences: experiences, certifications: certifications, skills: skills);
+  }) : super(
+         projects: projects,
+         experiences: experiences,
+         certifications: certifications,
+         skills: skills,
+       );
 
   factory PortfolioDataModel.fromJson(Map<String, dynamic> json) {
     return PortfolioDataModel(
-      projects: (json['projects'] as List).map((e) => ProjectModel.fromJson(e)).toList(),
-      experiences: (json['experiences'] as List).map((e) => ExperienceModel.fromJson(e)).toList(),
-      certifications: (json['certifications'] as List).map((e) => CertificationModel.fromJson(e)).toList(),
-      skills: (json['skills'] as List).map((e) => SkillModel.fromJson(e)).toList(),
+      projects: (json['projects'] as List)
+          .map((e) => ProjectModel.fromJson(e))
+          .toList(),
+      experiences: (json['experiences'] as List)
+          .map((e) => ExperienceModel.fromJson(e))
+          .toList(),
+      certifications: (json['certifications'] as List)
+          .map((e) => CertificationModel.fromJson(e))
+          .toList(),
+      skills: (json['skills'] as List)
+          .map((e) => SkillModel.fromJson(e))
+          .toList(),
     );
   }
 

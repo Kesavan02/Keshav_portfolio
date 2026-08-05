@@ -34,26 +34,19 @@ class _ContactSectionState extends State<ContactSection> {
 
     setState(() => _isLoading = true);
 
-    // EmailJS credentials
-    const serviceId =
-        'YOUR_SERVICE_ID'; // Replace these if you setup EmailJS later
-    const templateId = 'YOUR_TEMPLATE_ID';
-    const userId = 'YOUR_PUBLIC_KEY';
-
     try {
       final response = await http.post(
-        Uri.parse('https://api.emailjs.com/api/v1.0/email/send'),
-        headers: {'Content-Type': 'application/json'},
+        Uri.parse('https://formsubmit.co/ajax/keshavsreenivas@gmail.com'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
         body: json.encode({
-          'service_id': serviceId,
-          'template_id': templateId,
-          'user_id': userId,
-          'template_params': {
-            'from_name': _nameController.text,
-            'reply_to': _emailController.text,
-            'contact_number': _numberController.text,
-            'message': _messageController.text,
-          },
+          'name': _nameController.text,
+          'email': _emailController.text,
+          'number': _numberController.text,
+          'message': _messageController.text,
+          '_subject': 'New Portfolio Message from ${_nameController.text}',
         }),
       );
 
@@ -61,7 +54,7 @@ class _ContactSectionState extends State<ContactSection> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Message sent successfully!'),
+              content: Text('Message sent successfully! Thank you for reaching out.'),
               backgroundColor: AppColors.accentCyan,
             ),
           );
@@ -72,18 +65,40 @@ class _ContactSectionState extends State<ContactSection> {
           _messageController.clear();
         }
       } else {
-        // Trigger fallback due to quota limit or invalid ID
-        _handleFallback(
-          'Email service limit reached. Routing to your mail app...',
-        );
+        _handleFallback('Opening Gmail compose tab...');
       }
     } catch (e) {
-      _handleFallback('Network error. Routing to your mail app...');
+      _handleFallback('Opening Gmail compose tab...');
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
       }
     }
+  }
+
+  Future<void> _launchEmail(
+    String email, {
+    String? subject,
+    String? body,
+  }) async {
+    String gmailUrl = 'https://mail.google.com/mail/?view=cm&fs=1&to=$email';
+    if (subject != null) gmailUrl += '&su=${Uri.encodeComponent(subject)}';
+    if (body != null) gmailUrl += '&body=${Uri.encodeComponent(body)}';
+
+    final uri = Uri.parse(gmailUrl);
+    try {
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(
+          uri,
+          mode: LaunchMode.externalApplication,
+          webOnlyWindowName: '_blank',
+        );
+        return;
+      }
+    } catch (_) {}
+
+    final mailtoUri = Uri.parse('mailto:$email');
+    await launchUrl(mailtoUri);
   }
 
   void _handleFallback(String errorMessage) {
@@ -100,20 +115,14 @@ class _ContactSectionState extends State<ContactSection> {
       );
     }
 
-    final subject = Uri.encodeComponent(
-      'Portfolio Contact from ${_nameController.text}',
+    _launchEmail(
+      'keshavsreenivas@gmail.com',
+      subject: 'Portfolio Contact from ${_nameController.text}',
+      body: 'Name: ${_nameController.text}\n'
+          'Number: ${_numberController.text}\n'
+          'Email: ${_emailController.text}\n\n'
+          'Message:\n${_messageController.text}',
     );
-    final body = Uri.encodeComponent(
-      'Name: ${_nameController.text}\n'
-      'Number: ${_numberController.text}\n'
-      'Email: ${_emailController.text}\n\n'
-      'Message:\n${_messageController.text}',
-    );
-
-    final mailtoUrl = Uri.parse(
-      'mailto:cecskesavank25@gmail.com?subject=$subject&body=$body',
-    );
-    launchUrl(mailtoUrl);
   }
 
   @override
@@ -159,7 +168,7 @@ class _ContactSectionState extends State<ContactSection> {
           ),
 
           // Footer
-          _buildFooter(),
+          // _buildFooter(),
         ],
       ),
     );
@@ -174,7 +183,7 @@ class _ContactSectionState extends State<ContactSection> {
           style: TextStyle(
             fontSize: 48,
             fontWeight: FontWeight.bold,
-            color: Color(0xFFB594F6), // Light purple from reference
+            color: AppColors.accentCyan,
             letterSpacing: 1.5,
           ),
         ),
@@ -204,7 +213,7 @@ class _ContactSectionState extends State<ContactSection> {
         const SizedBox(height: 25),
         _buildContactDetailItem(
           Icons.email,
-          'cecskesavank25@gmail.com',
+          'keshavsreenivas@gmail.com',
           isLink: true,
         ),
         const SizedBox(height: 50),
@@ -243,18 +252,16 @@ class _ContactSectionState extends State<ContactSection> {
     return MouseRegion(
       cursor: isLink ? SystemMouseCursors.click : SystemMouseCursors.basic,
       child: GestureDetector(
-        onTap: isLink ? () => launchUrl(Uri.parse('mailto:$text')) : null,
+        onTap: isLink ? () => _launchEmail(text) : null,
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(
-                  0xFFB594F6,
-                ).withValues(alpha: 0.2), // Light purple background
+                color: AppColors.accentCyan.withValues(alpha: 0.15),
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, color: const Color(0xFFB594F6), size: 24),
+              child: Icon(icon, color: AppColors.accentCyan, size: 24),
             ),
             const SizedBox(width: 20),
             Text(
@@ -352,15 +359,13 @@ class _ContactSectionState extends State<ContactSection> {
               child: ElevatedButton(
                 onPressed: _isLoading ? null : _sendMessage,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(
-                    0xFF8E6CEF,
-                  ), // Purple from reference
+                  backgroundColor: AppColors.primaryGlow,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                   elevation: 5,
-                  shadowColor: const Color(0xFF8E6CEF).withValues(alpha: 0.5),
+                  shadowColor: AppColors.primaryGlow.withValues(alpha: 0.5),
                 ),
                 child: _isLoading
                     ? const SizedBox(
@@ -415,9 +420,12 @@ class _ContactSectionState extends State<ContactSection> {
               ? TextInputType.emailAddress
               : (isPhone ? TextInputType.phone : TextInputType.text),
           validator: (value) {
-            if (value == null || value.trim().isEmpty)
+            if (value == null || value.trim().isEmpty) {
               return '$label is required';
-            if (isEmail && !value.contains('@')) return 'Enter a valid email';
+            }
+            if (isEmail && !value.contains('@')) {
+              return 'Enter a valid email';
+            }
             return null;
           },
           decoration: InputDecoration(
@@ -438,7 +446,7 @@ class _ContactSectionState extends State<ContactSection> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: Color(0xFF8E6CEF)),
+              borderSide: const BorderSide(color: AppColors.primaryGlow),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
@@ -454,129 +462,129 @@ class _ContactSectionState extends State<ContactSection> {
     );
   }
 
-  Widget _buildFooter() {
-    return Container(
-      width: double.infinity,
-      color: const Color(0xFF2B214D), // Deep purple footer background
-      padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 40),
-      child: Column(
-        children: [
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final isMobile = constraints.maxWidth < 700;
-              if (isMobile) {
-                return Column(
-                  children: [
-                    _buildFooterLogo(),
-                    const SizedBox(height: 30),
-                    _buildFooterLinks(),
-                    const SizedBox(height: 30),
-                    _buildSocialIcon(
-                      const FaIcon(
-                        FontAwesomeIcons.linkedinIn,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                      'https://www.linkedin.com/in/kesavan-k-224b09253',
-                    ),
-                  ],
-                );
-              }
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildFooterLogo(),
-                  _buildFooterLinks(),
-                  _buildSocialIcon(
-                    const FaIcon(
-                      FontAwesomeIcons.linkedinIn,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                    'https://www.linkedin.com/in/kesavan-k-224b09253',
-                  ),
-                ],
-              );
-            },
-          ),
-          const SizedBox(height: 30),
-          const Divider(color: Colors.white12),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                '©2024 Kesavan. All rights reserved.',
-                style: TextStyle(color: Colors.white54, fontSize: 12),
-              ),
-              RichText(
-                text: const TextSpan(
-                  style: TextStyle(color: Colors.white54, fontSize: 12),
-                  children: [
-                    TextSpan(text: 'Design by '),
-                    TextSpan(
-                      text: 'Kesavan',
-                      style: TextStyle(decoration: TextDecoration.underline),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _buildFooter() {
+  //   return Container(
+  //     width: double.infinity,
+  //     color: AppColors.navBg,
+  //     padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 40),
+  //     child: Column(
+  //       children: [
+  //         LayoutBuilder(
+  //           builder: (context, constraints) {
+  //             final isMobile = constraints.maxWidth < 700;
+  //             if (isMobile) {
+  //               return Column(
+  //                 children: [
+  //                   _buildFooterLogo(),
+  //                   const SizedBox(height: 30),
+  //                   _buildFooterLinks(),
+  //                   const SizedBox(height: 30),
+  //                   _buildSocialIcon(
+  //                     const FaIcon(
+  //                       FontAwesomeIcons.linkedinIn,
+  //                       color: Colors.white,
+  //                       size: 20,
+  //                     ),
+  //                     'https://www.linkedin.com/in/kesavan-k-224b09253',
+  //                   ),
+  //                 ],
+  //               );
+  //             }
+  //             return Row(
+  //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //               children: [
+  //                 _buildFooterLogo(),
+  //                 _buildFooterLinks(),
+  //                 _buildSocialIcon(
+  //                   const FaIcon(
+  //                     FontAwesomeIcons.linkedinIn,
+  //                     color: Colors.white,
+  //                     size: 20,
+  //                   ),
+  //                   'https://www.linkedin.com/in/kesavan-k-224b09253',
+  //                 ),
+  //               ],
+  //             );
+  //           },
+  //         ),
+  //         const SizedBox(height: 30),
+  //         const Divider(color: Colors.white12),
+  //         const SizedBox(height: 20),
+  //         Row(
+  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //           children: [
+  //             const Text(
+  //               '©2024 Kesavan. All rights reserved.',
+  //               style: TextStyle(color: Colors.white54, fontSize: 12),
+  //             ),
+  //             RichText(
+  //               text: const TextSpan(
+  //                 style: TextStyle(color: Colors.white54, fontSize: 12),
+  //                 children: [
+  //                   TextSpan(text: 'Design by '),
+  //                   TextSpan(
+  //                     text: 'Kesavan',
+  //                     style: TextStyle(decoration: TextDecoration.underline),
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
-  Widget _buildFooterLogo() {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          Icons.spa,
-          color: const Color(0xFFB594F6),
-          size: 30,
-        ), // Abstract leaf icon resembling reference
-        const SizedBox(width: 10),
-        const Text(
-          'Kesavan',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'Roboto',
-            color: Colors.white,
-            fontStyle: FontStyle.italic,
-          ),
-        ),
-      ],
-    );
-  }
+  // Widget _buildFooterLogo() {
+  //   return Row(
+  //     mainAxisSize: MainAxisSize.min,
+  //     children: [
+  //       Icon(
+  //         Icons.spa,
+  //         color: const Color(0xFFB594F6),
+  //         size: 30,
+  //       ), // Abstract leaf icon resembling reference
+  //       const SizedBox(width: 10),
+  //       const Text(
+  //         'Kesavan',
+  //         style: TextStyle(
+  //           fontSize: 24,
+  //           fontWeight: FontWeight.bold,
+  //           fontFamily: 'Roboto',
+  //           color: Colors.white,
+  //           fontStyle: FontStyle.italic,
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
-  Widget _buildFooterLinks() {
-    return Wrap(
-      spacing: 30,
-      runSpacing: 15,
-      alignment: WrapAlignment.center,
-      children: [
-        _buildFooterLink('Home'),
-        _buildFooterLink('About Me'),
-        _buildFooterLink('My Work'),
-        _buildFooterLink('Contact'),
-      ],
-    );
-  }
+  // Widget _buildFooterLinks() {
+  //   return Wrap(
+  //     spacing: 30,
+  //     runSpacing: 15,
+  //     alignment: WrapAlignment.center,
+  //     children: [
+  //       _buildFooterLink('Home'),
+  //       _buildFooterLink('About Me'),
+  //       _buildFooterLink('My Work'),
+  //       _buildFooterLink('Contact'),
+  //     ],
+  //   );
+  // }
 
-  Widget _buildFooterLink(String title) {
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      child: Text(
-        title,
-        style: const TextStyle(
-          color: Colors.white70,
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-    );
-  }
+  // Widget _buildFooterLink(String title) {
+  //   return MouseRegion(
+  //     cursor: SystemMouseCursors.click,
+  //     child: Text(
+  //       title,
+  //       style: const TextStyle(
+  //         color: Colors.white70,
+  //         fontSize: 14,
+  //         fontWeight: FontWeight.w500,
+  //       ),
+  //     ),
+  //   );
+  // }
 }
