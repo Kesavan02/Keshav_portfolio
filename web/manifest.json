@@ -1,11 +1,11 @@
 {
-    "name": "keshu_portfolio",
-    "short_name": "keshu_portfolio",
+    "name": "Kesavan Portfolio",
+    "short_name": "Kesavan",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#0A0E17",
+    "theme_color": "#00FFFF",
+    "description": "Kesavan Portfolio Web Application.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
