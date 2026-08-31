@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'core/theme.dart';
+import 'core/widgets/app_update_gate.dart';
 import 'features/portfolio/presentation/bloc/portfolio_bloc.dart';
 import 'features/portfolio/presentation/bloc/portfolio_event.dart';
 import 'features/portfolio/presentation/pages/portfolio_page.dart';
@@ -58,7 +59,9 @@ class MyApp extends StatelessWidget {
           textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
           useMaterial3: true,
         ),
-        home: const PortfolioPage(),
+        home: const AppUpdateGate(
+          child: PortfolioPage(),
+        ),
       ),
     );
   }

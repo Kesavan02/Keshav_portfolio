@@ -54,7 +54,9 @@ class _ContactSectionState extends State<ContactSection> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Message sent successfully! Thank you for reaching out.'),
+              content: Text(
+                'Message sent successfully! Thank you for reaching out.',
+              ),
               backgroundColor: AppColors.accentCyan,
             ),
           );
@@ -118,7 +120,8 @@ class _ContactSectionState extends State<ContactSection> {
     _launchEmail(
       'keshavsreenivas@gmail.com',
       subject: 'Portfolio Contact from ${_nameController.text}',
-      body: 'Name: ${_nameController.text}\n'
+      body:
+          'Name: ${_nameController.text}\n'
           'Number: ${_numberController.text}\n'
           'Email: ${_emailController.text}\n\n'
           'Message:\n${_messageController.text}',
@@ -127,6 +130,7 @@ class _ContactSectionState extends State<ContactSection> {
 
   @override
   Widget build(BuildContext context) {
+    final isMobileScreen = MediaQuery.of(context).size.width < 900;
     return Container(
       width: double.infinity,
       color: AppColors.backgroundDark,
@@ -134,7 +138,10 @@ class _ContactSectionState extends State<ContactSection> {
         children: [
           // Main Content Area
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 100),
+            padding: EdgeInsets.symmetric(
+              horizontal: isMobileScreen ? 24 : 50,
+              vertical: 100,
+            ),
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final isMobile = constraints.maxWidth < 900;

@@ -556,33 +556,38 @@ class _ProjectsSliverDelegate extends SliverPersistentHeaderDelegate {
           // Top Header of Card
           Row(
             children: [
-              Text(
-                (project.category ?? 'FLUTTER & DART').toUpperCase(),
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: isMobile ? 14 : 18,
-                  fontWeight: FontWeight.w400,
-                  letterSpacing: -0.5,
+              Flexible(
+                fit: FlexFit.loose,
+                child: Text(
+                  (project.category ?? 'FLUTTER & DART').toUpperCase(),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: isMobile ? 11 : 18,
+                    fontWeight: FontWeight.w400,
+                    letterSpacing: isMobile ? -0.3 : -0.5,
+                  ),
                 ),
               ),
-              const SizedBox(width: 16),
+              SizedBox(width: isMobile ? 6 : 16),
               Container(
-                padding: const EdgeInsets.all(6),
+                padding: EdgeInsets.all(isMobile ? 4 : 6),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(color: Colors.white24),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.arrow_forward,
                   color: Colors.white54,
-                  size: 14,
+                  size: isMobile ? 12 : 14,
                 ),
               ),
-              const SizedBox(width: 16),
-              const Flexible(
+              SizedBox(width: isMobile ? 6 : 16),
+              const Expanded(
                 child: Divider(color: Colors.white24, thickness: 1),
               ),
-              const SizedBox(width: 16),
+              SizedBox(width: isMobile ? 6 : 16),
 
               // Dynamic Routing Link Button (Replaces UX & UI)
               if (project.githubUrl != null) ...[
@@ -590,43 +595,47 @@ class _ProjectsSliverDelegate extends SliverPersistentHeaderDelegate {
                   cursor: SystemMouseCursors.click,
                   child: GestureDetector(
                     onTap: () => _launchUrl(project.githubUrl!),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.backgroundDark.withValues(alpha: 0.8),
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: AppColors.accentCyan.withValues(alpha: 0.6),
-                          width: 1,
+                    child: FittedBox(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 6,
                         ),
-                      ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          FaIcon(
-                            FontAwesomeIcons.github,
-                            color: Colors.white,
-                            size: 13,
+                        decoration: BoxDecoration(
+                          color: AppColors.backgroundDark.withValues(
+                            alpha: 0.8,
                           ),
-                          SizedBox(width: 6),
-                          Text(
-                            "GitHub",
-                            style: TextStyle(
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: AppColors.accentCyan.withValues(alpha: 0.6),
+                            width: 1,
+                          ),
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            FaIcon(
+                              FontAwesomeIcons.github,
                               color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
+                              size: 13,
                             ),
-                          ),
-                          SizedBox(width: 4),
-                          Icon(
-                            Icons.arrow_outward_rounded,
-                            color: AppColors.accentCyan,
-                            size: 13,
-                          ),
-                        ],
+                            SizedBox(width: 6),
+                            Text(
+                              "GitHub",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(width: 4),
+                            Icon(
+                              Icons.arrow_outward_rounded,
+                              color: AppColors.accentCyan,
+                              size: 13,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -636,49 +645,51 @@ class _ProjectsSliverDelegate extends SliverPersistentHeaderDelegate {
                   cursor: SystemMouseCursors.click,
                   child: GestureDetector(
                     onTap: () => _launchUrl(project.playStoreUrl!),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFF00E676), Color(0xFF00B0FF)],
+                    child: FittedBox(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 6,
                         ),
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(
-                              0xFF00E676,
-                            ).withValues(alpha: 0.4),
-                            blurRadius: 8,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF00E676), Color(0xFF00B0FF)],
                           ),
-                        ],
-                      ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          FaIcon(
-                            FontAwesomeIcons.googlePlay,
-                            color: Colors.white,
-                            size: 12,
-                          ),
-                          SizedBox(width: 6),
-                          Text(
-                            "Play Store",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(
+                                0xFF00E676,
+                              ).withValues(alpha: 0.4),
+                              blurRadius: 8,
                             ),
-                          ),
-                          SizedBox(width: 4),
-                          Icon(
-                            Icons.arrow_outward_rounded,
-                            color: Colors.white,
-                            size: 13,
-                          ),
-                        ],
+                          ],
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            FaIcon(
+                              FontAwesomeIcons.googlePlay,
+                              color: Colors.white,
+                              size: 12,
+                            ),
+                            SizedBox(width: 6),
+                            Text(
+                              "Play Store",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(width: 4),
+                            Icon(
+                              Icons.arrow_outward_rounded,
+                              color: Colors.white,
+                              size: 13,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -688,7 +699,7 @@ class _ProjectsSliverDelegate extends SliverPersistentHeaderDelegate {
                   'FEATURED',
                   style: TextStyle(
                     color: AppColors.accentCyan,
-                    fontSize: isMobile ? 12 : 14,
+                    fontSize: isMobile ? 11 : 14,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 0.5,
                   ),

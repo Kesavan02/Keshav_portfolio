@@ -265,13 +265,15 @@ class _HeroSectionState extends State<HeroSection>
           children: [
             Container(width: 12, height: 2, color: AppColors.accentCyan),
             const SizedBox(width: 8),
-            const Text(
-              "Flutter Software Engineer • Clean Architecture",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textSecondary,
-                letterSpacing: 0.5,
+            const Flexible(
+              child: Text(
+                "Flutter Software Engineer • Clean Architecture",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textSecondary,
+                  letterSpacing: 0.5,
+                ),
               ),
             ),
           ],
@@ -305,8 +307,8 @@ class _HeroSectionState extends State<HeroSection>
             spacing: 20,
             runSpacing: 12,
             children: [
-              _buildStatBadge("⚡ 3+ Yrs", "Experience"),
-              _buildStatBadge("📱 10+", "Apps Built"),
+              _buildStatBadge("⚡ 1+ Yrs", "Experience"),
+              _buildStatBadge("📱 7+", "Apps Built"),
               _buildStatBadge("🎯 Clean", "Architecture"),
             ],
           ),
